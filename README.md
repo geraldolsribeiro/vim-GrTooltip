@@ -9,7 +9,8 @@ flags with very cryptic names.
 
 ## How to use
 
-Move the cursor over the word and call the `GrTooltip` command.
+Move the cursor over the word and call the `GrTooltip` command or press
+`<C-G><C-T>` shortcut.
 
 ![img](img/GrTooltip01.png)
 
