@@ -12,19 +12,25 @@ function! GrTooltip()
   if filereadable(l:filename)
     let l:contents = readfile(l:filename)
     call popup_create(l:contents, #{
-          \ title: ' GrTooltip ', 
+          \ title: ' geraldolsribeiro/GrTooltip.vim ',
           \ padding: [0,1,0,1],
           \ drag: 1,
           \ border: [],
           \ close: 'click'
           \ })
   else
-    echomsg l:currentWord." was not found!"
+    echomsg l:currentWord." not found!"
   endif
 endfunction
 
+function! GrTooltipEdit()
+  let l:currentWord = expand('<cword>')
+  let l:filename = expand(g:gr_tooltip_folder.currentWord)
+  execute "edit +3 ".fnameescape(l:filename)
+endfunction
+
 command GrTooltip :call GrTooltip()
+nnoremap <C-G><C-T> :call GrTooltip()<CR>
 
-nnoremap <C-G><C-T> :call GrTooltip()<CR> 
-
-" Test work SO_BSDCOMPAT
+command GrTooltipEdit :call GrTooltipEdit()
+nnoremap <C-G><C-O> :call GrTooltipEdit()<CR>
