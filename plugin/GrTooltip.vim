@@ -1,4 +1,4 @@
-if exists('g:loaded_gr_tooltip') || &compatible
+if exists('g:gr_tooltip_loaded') || &compatible
   finish
 endif
 
@@ -9,18 +9,41 @@ if version < 800
   finish
 endif
 
-let g:loaded_gr_tooltip = 1
+" if !exists("g:UltiSnipsPMDebugBlocking")
+" let g:UltiSnipsPMDebugBlocking = 0
+" endif
+
+" Loaded flag
+let g:gr_tooltip_loaded = 1
+
+" Use an alternative filetype
+let g:gr_tooltip_filetype_remap = { 'c': 'cpp' }
 
 " Folder to store tooltip files
 let g:gr_tooltip_folder='~/.GrTooltip'
 
+" Default for undefined filetype
+let g:gr_tooltip_default_filetype = 'cpp'
+
+" Return an alternative filetype if it's specified in
+" gr_tooltip_filetype_remap
+function! GrTooltipFiletype()
+  let l:filetype = get(g:gr_tooltip_filetype_remap, &filetype, &filetype)
+  if len(l:filetype) == 0
+    let l:filetype = g:gr_tooltip_default_filetype
+  endif
+  return l:filetype
+endfunction
+
+" Return tooltip filename
 function! GrTooltipFilename()
   let l:currentWord = expand('<cword>')
-  let l:filetype = &filetype
-  let l:filename = expand(g:gr_tooltip_folder.'/'.filetype.'/'.currentWord)
+  let l:filetype = GrTooltipFiletype()
+  let l:filename = expand(g:gr_tooltip_folder.'/'.l:filetype.'/'.currentWord)
   return l:filename
 endfunction
 
+" Show tooltip
 function! GrTooltip()
   let l:filename = GrTooltipFilename()
   if filereadable(l:filename)
@@ -37,12 +60,29 @@ function! GrTooltip()
   endif
 endfunction
 
-function! GrTooltipEdit()
-  let l:filename = GrTooltipFilename()
-  let l:filetype = &filetype
-  let l:foldername = expand(g:gr_tooltip_folder.'/'.filetype)
+" Create folder to store new tooltips
+function! GrTooltipCreateFolder()
+  let l:filetype = GrTooltipFiletype()
+  let l:foldername = expand(g:gr_tooltip_folder.'/'.l:filetype)
   call mkdir(foldername, "p", 0o700)
+endfunction
+
+" Open tooltip file to edit
+function! GrTooltipEdit()
+  GrTooltipCreateFolder()
+  let l:filename = GrTooltipFilename()
   execute "edit +3 ".fnameescape(l:filename)
+endfunction
+
+function! GrTooltipAppend()
+  let l:filename = GrTooltipFilename()
+  " https://stackoverflow.com/questions/23089736/how-do-i-append-text-to-a-file-with-vim-script
+  new
+  setlocal buftype=nofile bufhidden=hide noswapfile nobuflisted
+  normal! "+p
+  execute "w >>" l:filename
+  q
+  echomsg "Clipboard text appended to ".l:filename
 endfunction
 
 command GrTooltip :call GrTooltip()
@@ -50,3 +90,7 @@ nnoremap <C-G><C-T> :call GrTooltip()<CR>
 
 command GrTooltipEdit :call GrTooltipEdit()
 nnoremap <C-G><C-O> :call GrTooltipEdit()<CR>
+
+command GrTooltipAppend :call GrTooltipAppend()<CR>
+nnoremap <C-G><C-A> :call GrTooltipAppend()<CR>
+
