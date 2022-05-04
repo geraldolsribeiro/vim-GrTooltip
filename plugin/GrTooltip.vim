@@ -28,10 +28,10 @@ let g:gr_tooltip_default_filetype = 'cpp'
 " Return an alternative filetype if it's specified in
 " gr_tooltip_filetype_remap
 function! GrTooltipFiletype()
-  let l:filetype = get(g:gr_tooltip_filetype_remap, &filetype, &filetype)
-  if len(l:filetype) == 0
-    let l:filetype = g:gr_tooltip_default_filetype
+  if len(&filetype) == 0
+    return g:gr_tooltip_default_filetype
   endif
+  let l:filetype = get(g:gr_tooltip_filetype_remap, &filetype, &filetype)
   return l:filetype
 endfunction
 
