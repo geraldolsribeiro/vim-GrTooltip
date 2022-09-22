@@ -23,7 +23,7 @@ All tooltips are plaintext files in the `~/.GrTooltip/` folder.
 ### With vim-plug
 
 ```vim
-Plug 'geraldolsribeiro/GrTooltip.vim'
+Plug 'geraldolsribeiro/vim-GrTooltip'
 ```
 
 ## Database
